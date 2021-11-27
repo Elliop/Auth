@@ -1,9 +1,10 @@
+import Login from "./pages/Login";
+
 const App = () => {
   return (
-    <div className="text-blue-500">
-      {/*  */}
-      Hello World!
-    </div>
+    <>
+      <Login />
+    </>
   );
 };
 

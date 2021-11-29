@@ -3,6 +3,7 @@ import { body, validationResult } from "express-validator";
 import User from "../models/user";
 import bcrypt from "bcryptjs";
 import JWT from "jsonwebtoken";
+import { checkAuth } from "../middleware/checkAuth";
 
 const router = express.Router();
 
@@ -104,7 +105,7 @@ router.post("/login", async (req, res) => {
   }
 
   const token = JWT.sign(
-    { email: user.email },
+    { username: user.username },
     process.env.JWT_SECRET as string,
     {
       expiresIn: 360000,
@@ -117,7 +118,22 @@ router.post("/login", async (req, res) => {
       token,
       user: {
         id: user._id,
-        email: user.email,
+        username: user.username,
+      },
+    },
+  });
+});
+
+router.get("/me", checkAuth, async (req, res) => {
+  const user = await User.findOne({ username: req.user });
+
+  return res.json({
+    errors: [],
+    data: {
+      user: {
+        id: user._id,
+        username: user.username,
+        stripeCustomerId: user.stripeCustomerId,
       },
     },
   });

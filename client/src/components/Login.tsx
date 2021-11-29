@@ -1,6 +1,12 @@
 import { ColorSwatchIcon } from "@heroicons/react/solid";
 
 const Login = (props: any) => {
+  const handleFormSubmit = (event: any) => {
+    event.preventDefault();
+    let email = event.target.elements.email?.value;
+    let password = event.target.elements.password?.value;
+    console.log(email, password);
+  };
   return (
     <div className="lg:flex">
       <div className="lg:w-1/2">
@@ -22,18 +28,15 @@ const Login = (props: any) => {
             Log in
           </h2>
           <div className="mt-12">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-              }}
-            >
+            <form onSubmit={handleFormSubmit}>
               <div>
                 <div className="text-sm font-bold text-gray-700 tracking-wide">
                   Email Address
                 </div>
                 <input
                   className="w-full text-lg py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500"
-                  type=""
+                  type="email"
+                  id="email"
                   placeholder="mike@gmail.com"
                 />
               </div>
@@ -45,12 +48,14 @@ const Login = (props: any) => {
                 </div>
                 <input
                   className="w-full text-lg py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500"
-                  type=""
+                  type="password"
+                  id="password"
                   placeholder="Enter your password"
                 />
               </div>
               <div>
                 <div
+                  onClick={props.onForgot}
                   className="text-md font-display font-semibold text-indigo-600 hover:text-indigo-800
                                         cursor-pointer mt-2 mb-14 float-right"
                 >
@@ -72,7 +77,7 @@ const Login = (props: any) => {
               onClick={props.onSignUp}
               className="mt-12 text-sm font-display font-semibold text-gray-700 text-center"
             >
-              Don't have an account ?{" "}
+              {`Don't have an account ? `}
               <span className="cursor-pointer text-indigo-600 hover:text-indigo-800">
                 Sign up
               </span>

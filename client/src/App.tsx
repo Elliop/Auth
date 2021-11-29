@@ -26,7 +26,7 @@ const App = () => {
   return (
     <>
       {login && <Login onSignUp={showSignUp} onForgot={showForgot} />}
-      {signUp && <SignUp onLogin={showLogin} onForgot={showForgot} />}
+      {signUp && <SignUp onLogin={showLogin} />}
       {forgot && <Forgot onLogin={showLogin} onSignUp={showSignUp} />}
     </>
   );

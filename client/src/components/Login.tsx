@@ -1,6 +1,6 @@
 import { ColorSwatchIcon } from "@heroicons/react/solid";
 
-const Login = () => {
+const Login = (props: any) => {
   return (
     <div className="lg:flex">
       <div className="lg:w-1/2">
@@ -68,7 +68,10 @@ const Login = () => {
                 </button>
               </div>
             </form>
-            <div className="mt-12 text-sm font-display font-semibold text-gray-700 text-center">
+            <div
+              onClick={props.onSignUp}
+              className="mt-12 text-sm font-display font-semibold text-gray-700 text-center"
+            >
               Don't have an account ?{" "}
               <span className="cursor-pointer text-indigo-600 hover:text-indigo-800">
                 Sign up

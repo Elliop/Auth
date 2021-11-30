@@ -1,12 +1,49 @@
 import { ColorSwatchIcon } from "@heroicons/react/solid";
+import axios from "axios";
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router";
+import { UserContext } from "../context";
 
 const Login = (props: any) => {
-  const handleFormSubmit = (event: any) => {
-    event.preventDefault();
-    let email = event.target.elements.email?.value;
-    let password = event.target.elements.password?.value;
-    console.log(email, password);
+  const [eroorMsg, setEroorMsg] = useState("");
+  const navigate = useNavigate();
+  const [state, setState] = useContext(UserContext);
+
+  const handleFormSubmit = async (e: any) => {
+    e.preventDefault();
+    let email = e.target.elements.email?.value;
+    let password = e.target.elements.password?.value;
+    let response;
+
+    const { data: signUpData } = await axios.post(
+      "http://localhost:8081/auth/login",
+      {
+        email,
+        password,
+      }
+    );
+    response = signUpData;
+
+    if (response.errors.length) {
+      return setEroorMsg(response.errors[0].msg);
+    }
+    // Set State
+    setState({
+      data: {
+        id: response.data.user.id,
+        username: response.data.user.username,
+        stripeCustomerId: response.data.user.stripeCustomerId,
+      },
+      loading: false,
+      error: null,
+    });
+    localStorage.setItem("token", response.data.token);
+    axios.defaults.headers.common[
+      "authorization"
+    ] = `Bearer ${response.data.token}`;
+    navigate("/logged");
   };
+
   return (
     <div className="lg:flex">
       <div className="lg:w-1/2">
@@ -53,14 +90,15 @@ const Login = (props: any) => {
                   placeholder="Enter your password"
                 />
               </div>
-              <div>
+              <div className="mt-2">
                 <div
                   onClick={props.onForgot}
                   className="text-md font-display font-semibold text-indigo-600 hover:text-indigo-800
-                                        cursor-pointer mt-2 mb-14 float-right"
+                                        cursor-pointer mb-14 float-right"
                 >
                   Forgot Password?
                 </div>
+                {eroorMsg && <div className="text-red-500">{eroorMsg}</div>}
               </div>
               <div className="mt-10">
                 <button

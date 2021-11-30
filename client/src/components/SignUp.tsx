@@ -1,12 +1,49 @@
 import { ColorSwatchIcon } from "@heroicons/react/solid";
+import axios from "axios";
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router";
+import { UserContext } from "../context";
 
 const SignUp = (props: any) => {
-  const handleFormSubmit = (event: any) => {
-    event.preventDefault();
-    let username = event.target.elements.username?.value;
-    let email = event.target.elements.email?.value;
-    let password = event.target.elements.password?.value;
-    console.log(username, email, password);
+  const [eroorMsg, setEroorMsg] = useState("");
+  const navigate = useNavigate();
+  const [state, setState] = useContext(UserContext);
+
+  const handleFormSubmit = async (e: any) => {
+    e.preventDefault();
+    let username = e.target.elements.username?.value;
+    let email = e.target.elements.email?.value;
+    let password = e.target.elements.password?.value;
+    let response;
+
+    const { data: signUpData } = await axios.post(
+      "http://localhost:8081/auth/signup",
+      {
+        username,
+        email,
+        password,
+      }
+    );
+    response = signUpData;
+
+    if (response.errors.length) {
+      return setEroorMsg(response.errors[0].msg);
+    }
+    // Set State
+    setState({
+      data: {
+        id: response.data.user.id,
+        username: response.data.user.username,
+        stripeCustomerId: response.data.user.stripeCustomerId,
+      },
+      loading: false,
+      error: null,
+    });
+    localStorage.setItem("token", response.data.token);
+    axios.defaults.headers.common[
+      "authorization"
+    ] = `Bearer ${response.data.token}`;
+    navigate("/logged");
   };
   return (
     <div className="lg:flex">
@@ -37,7 +74,7 @@ const SignUp = (props: any) => {
                 <input
                   className="w-full text-lg py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500"
                   type="text"
-                  id="email"
+                  id="username"
                   placeholder="Mike"
                 />
               </div>
@@ -65,6 +102,7 @@ const SignUp = (props: any) => {
                   placeholder="Enter your password"
                 />
               </div>
+              {eroorMsg && <div className="text-red-500 mt-2">{eroorMsg}</div>}
               <div className="mt-10">
                 <button
                   type="submit"
@@ -72,10 +110,11 @@ const SignUp = (props: any) => {
                                 font-semibold font-display focus:outline-none focus:shadow-outline hover:bg-indigo-600
                                 shadow-lg"
                 >
-                  Log In
+                  SignUp
                 </button>
               </div>
             </form>
+
             <div
               onClick={props.onLogin}
               className="mt-12 text-sm font-display font-semibold text-gray-700 text-center"
